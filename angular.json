@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "finance-planner-angular": {
+    "finance-planner": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -28,8 +28,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              "favicon.ico"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -63,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "finance-planner-angular:build:production"
+              "buildTarget": "finance-planner:build:production"
             },
             "development": {
-              "buildTarget": "finance-planner-angular:build:development"
+              "buildTarget": "finance-planner:build:development"
             }
           },
           "defaultConfiguration": "development"

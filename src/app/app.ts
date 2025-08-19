@@ -38,7 +38,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 
 export class App {
-  protected readonly title = signal('finance-planner-angular');
+  protected readonly title = signal('finance-planner');
 
   data: {
     incomes: Income[];
