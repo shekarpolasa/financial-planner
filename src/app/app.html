@@ -1,0 +1,24 @@
+<div class="container-fluid p-4">
+  <div class="main-container">
+    <div class="p-4">
+      <h1 class="text-center mb-4">
+        <i class="fas fa-chart-line me-3"></i>Financial Planner
+      </h1>
+      <nav class="nav nav-tabs mb-4">
+        <!-- <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+          <i class="fas fa-tachometer-alt me-2"></i>Dashboard</a> -->
+        <a class="nav-link" routerLink="/income" routerLinkActive="active">
+          <i class="fas fa-rupee-sign me-2"></i>Income</a>
+        <a class="nav-link" routerLink="/investments" routerLinkActive="active">
+          <i class="fas fa-piggy-bank me-2"></i>Investments</a>
+        <a class="nav-link" routerLink="/expenses" routerLinkActive="active">
+          <i class="fas fa-receipt me-2"></i>Expenses</a>
+        <a class="nav-link" routerLink="/liabilities" routerLinkActive="active">
+          <i class="fas fa-home me-2"></i>Liabilities</a>
+        <a class="nav-link" routerLink="/swp-plan" routerLinkActive="active">
+          <i class="fas fa-chart-pie me-2"></i>SWP Plan</a>
+      </nav>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

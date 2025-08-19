@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-plus me-2"></i>{{ editingId ? 'Edit Income' : 'Add Income' }}</h5>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="incomeForm" (ngSubmit)="submit()">
+                    <div class="mb-3">
+                        <label for="incomeName" class="form-label">Income Name</label>
+                        <input id="incomeName" class="form-control" formControlName="name"
+                            placeholder="e.g., Salary, Pension, Rental" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="incomeAmount" class="form-label">Amount</label>
+                        <input id="incomeAmount" class="form-control" formControlName="amount" type="number"
+                            placeholder="" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="incomeType" class="form-label">Type</label>
+                        <select id="incomeType" class="form-select" formControlName="type">
+                            <option value="Monthly">Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <!-- Retirement Age input removed -->
+                    <div class="mb-3">
+                        <label for="stopDate" class="form-label">Stop Date (Eg. Retirement)</label>
+                        <input id="stopDate" class="form-control" formControlName="stopDate" type="date"
+                            placeholder="Retirement Stop Date" />
+                    </div>
+                    <button class="btn btn-primary" type="submit">{{ editingId ? 'Update' : 'Add' }} Income</button>
+                    <button *ngIf="editingId" class="btn btn-secondary ms-2" type="button"
+                        (click)="cancelEdit()">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-list me-2"></i>Your Income</h5>
+                <div>
+                    <span class="me-3">Monthly Total: <strong>{{ monthlyTotal | number:'1.0-2' }}</strong></span>
+                    <span>Yearly Total: <strong>{{ yearlyTotal | number:'1.0-2' }}</strong></span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div *ngIf="(incomes$ | async)?.length === 0" class="text-muted">No income added yet.</div>
+                <div *ngFor="let income of incomes$ | async"
+                    class="expense-item d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>{{income.name}}</strong><br />
+                        <span class="text-success">₹{{income.amount | number:'1.0-2'}}</span>
+                        <span class="badge bg-secondary ms-2">{{income.type}}</span><br />
+                        <span *ngIf="income.stopDate">
+                            <small class="text-muted">
+                                Stop Date: {{ income.stopDate | date:'longDate' }}
+                            </small>
+                        </span>
+                    </div>
+                    <div>
+                        <button class="btn" (click)="edit(income)"><i class="fas fa-edit"></i></button>
+                        <button class="btn" (click)="delete(income.id)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

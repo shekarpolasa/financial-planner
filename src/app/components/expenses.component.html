@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-plus me-2"></i>{{ editingId ? 'Edit Expense' : 'Add Expense' }}</h5>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="expenseForm" (ngSubmit)="submit()">
+                    <div class="mb-3">
+                        <label for="expenseName" class="form-label">Expense Name</label>
+                        <input id="expenseName" class="form-control" formControlName="name"
+                            placeholder="e.g., Groceries, Rent, Insurance" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="expenseAmount" class="form-label">Amount (₹)</label>
+                        <input id="expenseAmount" class="form-control" formControlName="amount" type="number"
+                            placeholder="" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="expenseType" class="form-label">Expense Type</label>
+                        <select id="expenseType" class="form-select" formControlName="type">
+                            <option value="Monthly">Monthly</option>
+                            <option value="Yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit">{{ editingId ? 'Update' : 'Add' }} Expense</button>
+                    <button *ngIf="editingId" class="btn btn-secondary ms-2" type="button"
+                        (click)="cancelEdit()">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-list me-2"></i>Your Expenses</h5>
+            </div>
+            <div class="card-body">
+                <div *ngIf="(expenses$ | async) as expenses">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <div class="result-card">
+                                <div>Monthly Total</div>
+                                <div class="h4">₹{{ monthlyTotal | number:'1.0-2' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="result-card">
+                                <div>Yearly Total</div>
+                                <div class="h4">₹{{ yearlyTotal | number:'1.0-2' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngFor="let expense of expenses"
+                        class="expense-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{expense.name}}</strong><br />
+                            <span class="text-success">₹{{expense.amount | number:'1.0-2'}}</span>
+                            <span class="badge bg-secondary ms-2">{{expense.type}}</span>
+                        </div>
+                        <div>
+                            <button class="btn" (click)="edit(expense)"><i class="fas fa-edit"></i></button>
+                            <button class="btn" (click)="delete(expense.id)"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div *ngIf="expenses.length === 0" class="text-muted text-center">No expenses added yet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

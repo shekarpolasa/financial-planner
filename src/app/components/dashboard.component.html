@@ -1,0 +1,8 @@
+<div>
+  <h2>Dashboard</h2>
+  <p><strong>Net Worth:</strong> ₹{{ netWorth }}</p>
+  <p><strong>Total Income:</strong> ₹{{ data?.incomes?.reduce((sum, inc) => sum + (+inc.amount || 0), 0) }}</p>
+  <p><strong>Total Investments:</strong> ₹{{ data?.investments?.reduce((sum, inv) => sum + (+inv.amount || 0), 0) }}</p>
+  <p><strong>Total Expenses:</strong> ₹{{ data?.expenses?.reduce((sum, exp) => sum + (+exp.amount || 0), 0) }}</p>
+  <p><strong>Total Liabilities:</strong> ₹{{ data?.liabilities?.reduce((sum, liab) => sum + (+liab.amount || 0), 0) }}</p>
+</div>

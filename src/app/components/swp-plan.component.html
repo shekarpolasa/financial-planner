@@ -1,0 +1,129 @@
+<div class="alert alert-warning mb-4">
+    <p class="mb-0"><i class="fas fa-lightbulb me-2"></i>
+        <strong>Assumption:</strong> Currently your income covers all expenses and EMIs.
+        After retirement, your SWP corpus will need to fund both living expenses AND any remaining loan EMIs.
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">SWP Planning</h5>
+            </div>
+            <div class="card-body">
+                <form [formGroup]="swpForm" (ngSubmit)="calculateSWP()">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">SWP Start Date</label>
+                        <input id="startDate" class="form-control" formControlName="startDate" type="date" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="inflationRate" class="form-label">Inflation Rate (%)</label>
+                        <input id="inflationRate" class="form-control" formControlName="inflationRate" type="number" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="annualReturnRate" class="form-label">Annual Return Rate (%)</label>
+                        <input id="annualReturnRate" class="form-control" formControlName="annualReturnRate"
+                            type="number" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="corpusAmount" class="form-label">Corpus Amount (optional)</label>
+                        <input id="corpusAmount" class="form-control" formControlName="corpusAmount" type="number"
+                            placeholder="Leave blank to auto-calculate" />
+                    </div>
+                    <button class="btn btn-primary" type="submit">Calculate SWP Sustainability</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="summary-grid" *ngIf="sustainabilityYears !== null">
+            <div class="summary-card"
+                [ngClass]="sustainabilityYears < 10 ? 'danger-card' : (sustainabilityYears < 20 ? 'warning-card' : 'info-card')">
+                <h6><i class="fas fa-clock me-2"></i>Sustainability Period</h6>
+                <h4>{{sustainabilityYears}} Years</h4>
+                <small>From {{swpForm.value.startDate | date:'MMM yyyy'}} onwards</small>
+            </div>
+            <div class="summary-card">
+                <h6><i class="fas fa-piggy-bank me-2"></i>Corpus at SWP Start</h6>
+                <h4>₹{{ totalInvestmentValue | number:'1.0-0' }}</h4>
+                <small>Maturity value as of {{swpForm.value.startDate | date:'MMM yyyy'}}</small>
+            </div>
+
+            <div class="summary-card warning-card">
+                <h6><i class="fas fa-chart-line me-2"></i>Total Monthly Outflow at SWP Start</h6>
+                <h4>₹{{ totalMonthlyOutflow | number:'1.0-0' }}</h4>
+                <small>Expenses ({{swpForm.value.inflationRate}}% inflation) + EMI</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group">
+        <button class="btn btn-outline-primary" [class.active]="viewMode === 'year'" (click)="toggleView('year')">Yearly
+            View</button>
+        <button class="btn btn-outline-primary" [class.active]="viewMode === 'month'"
+            (click)="toggleView('month')">Monthly View</button>
+    </div>
+</div>
+
+<div *ngIf="viewMode === 'year' && yoyTable.length">
+    <h5>Year-over-Year Corpus & Withdrawals</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Corpus Start</th>
+                    <th>Growth</th>
+                    <th>Total Expenses/year</th>
+                    <th>Total EMI/year</th>
+                    <th>Withdrawals</th>
+                    <th>Net Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of yoyTable">
+                    <td>{{ row.period }}</td>
+                    <td>{{ row.corpus | number:'1.0-0' }}</td>
+                    <td>{{ row.growth | number:'1.0-0' }}</td>
+                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
+                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
+                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
+                    <td>{{ row.net | number:'1.0-0' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div *ngIf="viewMode === 'month' && momTable.length">
+    <h5>Month-over-Month Corpus & Withdrawals</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Month Year</th>
+                    <th>Corpus Start</th>
+                    <th>Growth</th>
+                    <th>Total Expenses/month</th>
+                    <th>Total EMI/month</th>
+                    <th>Withdrawals</th>
+                    <th>Net Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of momTable">
+                    <td>{{ row.period }}</td>
+                    <td>{{ row.corpus | number:'1.0-0' }}</td>
+                    <td>{{ row.growth | number:'1.0-0' }}</td>
+                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
+                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
+                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
+                    <td>{{ row.net | number:'1.0-0' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
