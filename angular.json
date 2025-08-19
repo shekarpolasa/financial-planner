@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "finance-planner": {
+    "financial-planner": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -62,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "finance-planner:build:production"
+              "buildTarget": "financial-planner:build:production"
             },
             "development": {
-              "buildTarget": "finance-planner:build:development"
+              "buildTarget": "financial-planner:build:development"
             }
           },
           "defaultConfiguration": "development"

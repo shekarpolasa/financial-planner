@@ -4,10 +4,10 @@ import { IncomeComponent } from './components/income.component';
 import { ExpensesComponent } from './components/expenses.component';
 import { InvestmentsComponent } from './components/investments.component';
 import { LiabilitiesComponent } from './components/liabilities.component';
-import { SwpPlanComponent } from './components/swp-plan.component';
+import { SwpPlanComponent } from './components/swp/swp-plan.component';
 
 export const routes: Routes = [
-	{ path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+	{ path: '', component: SwpPlanComponent, pathMatch: 'full'},
 	{ path: 'dashboard', component: DashboardComponent },
 	{ path: 'income', component: IncomeComponent },
 	{ path: 'expenses', component: ExpensesComponent },

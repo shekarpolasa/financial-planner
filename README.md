@@ -2,6 +2,12 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.6.
 
+## Command to generate the build for github
+
+```bash
+ng build --base-href "https://shekarpolasa.github.io/financial-planner/" --configuration=production
+```
+
 ## Development server
 
 To start a local development server, run:

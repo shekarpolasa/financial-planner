@@ -29,7 +29,7 @@
                     <div class="mb-3">
                         <label for="corpusAmount" class="form-label">Corpus Amount (optional)</label>
                         <input id="corpusAmount" class="form-control" formControlName="corpusAmount" type="number"
-                            placeholder="Leave blank to auto-calculate" />
+                            placeholder="" />
                     </div>
                     <button class="btn btn-primary" type="submit">Calculate SWP Sustainability</button>
                 </form>
@@ -59,71 +59,5 @@
     </div>
 </div>
 
-<div class="mb-3">
-    <div class="btn-group">
-        <button class="btn btn-outline-primary" [class.active]="viewMode === 'year'" (click)="toggleView('year')">Yearly
-            View</button>
-        <button class="btn btn-outline-primary" [class.active]="viewMode === 'month'"
-            (click)="toggleView('month')">Monthly View</button>
-    </div>
-</div>
-
-<div *ngIf="viewMode === 'year' && yoyTable.length">
-    <h5>Year-over-Year Corpus & Withdrawals</h5>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Year</th>
-                    <th>Corpus Start</th>
-                    <th>Growth</th>
-                    <th>Total Expenses/year</th>
-                    <th>Total EMI/year</th>
-                    <th>Withdrawals</th>
-                    <th>Net Change</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let row of yoyTable">
-                    <td>{{ row.period }}</td>
-                    <td>{{ row.corpus | number:'1.0-0' }}</td>
-                    <td>{{ row.growth | number:'1.0-0' }}</td>
-                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
-                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
-                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
-                    <td>{{ row.net | number:'1.0-0' }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div *ngIf="viewMode === 'month' && momTable.length">
-    <h5>Month-over-Month Corpus & Withdrawals</h5>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Month Year</th>
-                    <th>Corpus Start</th>
-                    <th>Growth</th>
-                    <th>Total Expenses/month</th>
-                    <th>Total EMI/month</th>
-                    <th>Withdrawals</th>
-                    <th>Net Change</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let row of momTable">
-                    <td>{{ row.period }}</td>
-                    <td>{{ row.corpus | number:'1.0-0' }}</td>
-                    <td>{{ row.growth | number:'1.0-0' }}</td>
-                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
-                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
-                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
-                    <td>{{ row.net | number:'1.0-0' }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
+<app-swp-result *ngIf="sustainabilityYears !== null">
+</app-swp-result>

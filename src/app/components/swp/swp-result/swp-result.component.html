@@ -1,0 +1,102 @@
+@if(yoyTable.length || momTable.length)
+{
+<div class="my-3">
+    <div class="btn-group">
+        <button class="btn btn-outline-primary" [class.active]="viewMode === 'year'" (click)="toggleView('year')">Year
+            View</button>
+        <button class="btn btn-outline-primary" [class.active]="viewMode === 'month'"
+            (click)="toggleView('month')">Month View</button>
+    </div>
+</div>
+
+<div *ngIf="viewMode === 'year'">
+    @if(yoyTable.length === 0)
+    {
+    <div class="alert alert-info mb-4">
+        <p class="mb-0"><i class="fas fa-info-circle me-2"></i>
+            No data available for Year-over-Year analysis. Please ensure you have SWP data calculated.
+        </p>
+    </div>
+    }
+    @else
+    {
+    @if(yoyChartConfig !== undefined)
+    {
+    <app-chart [chartConfig]="yoyChartConfig">
+    </app-chart>
+    }
+    <h5>Year-over-Year Corpus & Withdrawals</h5>
+    <div class="table-responsive" *ngIf="yoyTable.length">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Corpus Start</th>
+                    <th>Growth</th>
+                    <th>Expenses</th>
+                    <th>EMI</th>
+                    <th>Withdrawals</th>
+                    <th>Net Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of yoyTable">
+                    <td>{{ row.period }}</td>
+                    <td>{{ row.corpus | number:'1.0-0' }}</td>
+                    <td>{{ row.growth | number:'1.0-0' }}</td>
+                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
+                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
+                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
+                    <td>{{ row.net | number:'1.0-0' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
+
+<div *ngIf="viewMode === 'month'">
+    @if(momTable.length === 0)
+    {
+    <div class="alert alert-info mb-4">
+        <p class="mb-0"><i class="fas fa-info-circle me-2"></i>
+            No data available for Month-over-Month analysis. Please ensure you have SWP data calculated.
+        </p>
+    </div>
+    }
+    @else {
+    @if(momChartConfig !== undefined)
+    {
+    <app-chart [chartConfig]="momChartConfig">
+    </app-chart>
+    }
+    <h5>Month-over-Month Corpus & Withdrawals</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Month Year</th>
+                    <th>Corpus Start</th>
+                    <th>Growth</th>
+                    <th>Expenses</th>
+                    <th>EMI</th>
+                    <th>Withdrawals</th>
+                    <th>Net Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of momTable">
+                    <td>{{ row.period | date: 'MMM yyyy'}}</td>
+                    <td>{{ row.corpus | number:'1.0-0' }}</td>
+                    <td>{{ row.growth | number:'1.0-0' }}</td>
+                    <td>{{ row.totalExpenses | number:'1.0-0' }}</td>
+                    <td>{{ row.totalEMI | number:'1.0-0' }}</td>
+                    <td>{{ row.withdrawal | number:'1.0-0' }}</td>
+                    <td>{{ row.net | number:'1.0-0' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    }
+</div>
+}
