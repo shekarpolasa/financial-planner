@@ -2,9 +2,9 @@
 {
 <div class="my-3">
     <div class="btn-group">
-        <button class="btn btn-outline-primary" [class.active]="viewMode === 'year'" (click)="toggleView('year')">Year
+        <button class="btn btn-secondary" [class.btn-dark]="viewMode === 'year'" (click)="toggleView('year')">Year
             View</button>
-        <button class="btn btn-outline-primary" [class.active]="viewMode === 'month'"
+        <button class="btn btn-secondary" [class.btn-dark]="viewMode === 'month'"
             (click)="toggleView('month')">Month View</button>
     </div>
 </div>
@@ -31,7 +31,7 @@
             <thead>
                 <tr>
                     <th>Year</th>
-                    <th>Corpus Start</th>
+                    <th>Corpus</th>
                     <th>Growth</th>
                     <th>Expenses</th>
                     <th>EMI</th>
@@ -72,11 +72,11 @@
     }
     <h5>Month-over-Month Corpus & Withdrawals</h5>
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-hover table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Month Year</th>
-                    <th>Corpus Start</th>
+                    <th>Corpus</th>
                     <th>Growth</th>
                     <th>Expenses</th>
                     <th>EMI</th>

@@ -26,8 +26,8 @@
                         <input id="liabilityYears" class="form-control" formControlName="years" type="number"
                             placeholder="" />
                     </div>
-                    <button class="btn btn-primary" type="submit">{{ editingId ? 'Update' : 'Add' }} Liability</button>
-                    <button *ngIf="editingId" class="btn btn-secondary ms-2" type="button"
+                    <button class="btn btn-primary rounded-pill" type="submit">Save</button>
+                    <button *ngIf="editingId" class="btn btn-secondary rounded-pill ms-2" type="button"
                         (click)="cancelEdit()">Cancel</button>
                 </form>
             </div>
@@ -44,29 +44,37 @@
                     <h4>₹{{ totalEMI | number:'1.0-0' }}</h4>
                 </div>
 
-                <div *ngFor="let liability of (liabilities$ | async)"
-                    class="expense-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ liability.name }}</strong><br>
-                        <span class="text-info">Principal: ₹{{ liability.principal | number:'1.0-0' }}</span><br>
-                        <span class="text-warning">{{ liability.interestRate }}% for {{ liability.years }}
-                            years</span><br>
-                        <span class="text-danger">EMI: ₹{{ getEMI(liability) | number:'1.0-0' }}</span><br>
-                        <small class="text-muted">Total Interest: ₹{{ getTotalInterest(liability) | number:'1.0-0'
-                            }}</small>
+                <div *ngIf="(liabilities$ | async) as liabilities">
+                    @if(liabilities.length === 0)
+                    {
+                    <div class="text-center text-muted mt-3">
+                        No liabilities added yet
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn" (click)="edit(liability)">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn" (click)="delete(liability.id)">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    }
+                    @else
+                    {
+                    <div *ngFor="let liability of liabilities"
+                        class="expense-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ liability.name }}</strong><br>
+                            <span class="text-info">Principal: ₹{{ liability.principal | number:'1.0-0' }}</span><br>
+                            <span class="text-warning">{{ liability.interestRate }}% for {{ liability.years }}
+                                years</span><br>
+                            <span class="text-danger">EMI: ₹{{ getEMI(liability) | number:'1.0-0' }}</span><br>
+                            <small class="text-muted">Total Interest: ₹{{ getTotalInterest(liability) | number:'1.0-0'
+                                }}</small>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn" (click)="edit(liability)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn" (click)="delete(liability.id)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
+                    }
                 </div>
-
-                <p *ngIf="(liabilities$ | async)?.length === 0" class="text-muted text-center">No liabilities added yet
-                </p>
             </div>
         </div>
     </div>

@@ -7,11 +7,11 @@ import { LiabilitiesComponent } from './components/liabilities.component';
 import { SwpPlanComponent } from './components/swp/swp-plan.component';
 
 export const routes: Routes = [
-	{ path: '', component: SwpPlanComponent, pathMatch: 'full'},
+	{ path: '', component: SwpPlanComponent, pathMatch: 'full' },
 	{ path: 'dashboard', component: DashboardComponent },
 	{ path: 'income', component: IncomeComponent },
 	{ path: 'expenses', component: ExpensesComponent },
 	{ path: 'investments', component: InvestmentsComponent },
 	{ path: 'liabilities', component: LiabilitiesComponent },
-	{ path: 'swp-plan', component: SwpPlanComponent },
+	{ path: '**', redirectTo: '' }
 ];

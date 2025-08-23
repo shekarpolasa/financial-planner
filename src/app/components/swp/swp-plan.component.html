@@ -1,12 +1,5 @@
-<div class="alert alert-warning mb-4">
-    <p class="mb-0"><i class="fas fa-lightbulb me-2"></i>
-        <strong>Assumption:</strong> Currently your income covers all expenses and EMIs.
-        After retirement, your SWP corpus will need to fund both living expenses AND any remaining loan EMIs.
-    </p>
-</div>
-
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">SWP Planning</h5>
@@ -27,16 +20,16 @@
                             type="number" />
                     </div>
                     <div class="mb-3">
-                        <label for="corpusAmount" class="form-label">Corpus Amount (optional)</label>
+                        <label for="corpusAmount" class="form-label">Corpus Amount</label>
                         <input id="corpusAmount" class="form-control" formControlName="corpusAmount" type="number"
                             placeholder="" />
                     </div>
-                    <button class="btn btn-primary" type="submit">Calculate SWP Sustainability</button>
+                    <button class="btn btn-primary rounded-pill" type="submit">Calculate</button>
                 </form>
             </div>
         </div>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-8">
         <div class="summary-grid" *ngIf="sustainabilityYears !== null">
             <div class="summary-card"
                 [ngClass]="sustainabilityYears < 10 ? 'danger-card' : (sustainabilityYears < 20 ? 'warning-card' : 'info-card')">
@@ -61,3 +54,10 @@
 
 <app-swp-result *ngIf="sustainabilityYears !== null">
 </app-swp-result>
+
+<div class="alert alert-warning mt-4">
+    <p class="mb-0"><i class="fas fa-lightbulb me-2"></i>
+        <strong>Assumption:</strong> Currently your income covers all expenses and EMIs.
+        After retirement, your SWP corpus will need to fund both living expenses AND any remaining loan EMIs.
+    </p>
+</div>

@@ -6,6 +6,7 @@ declare const Chart: any; // because it's from CDN
 @Component({
     selector: 'app-chart',
     templateUrl: './chart.component.html',
+    styleUrls: ['./chart.component.css'],
 })
 export class ChartComponent {
     @ViewChild('chartCanvas') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -42,7 +43,7 @@ export class ChartComponent {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, 
+                maintainAspectRatio: false,
                 plugins: {
                     title: {
                         display: !!this.chartConfig.title,

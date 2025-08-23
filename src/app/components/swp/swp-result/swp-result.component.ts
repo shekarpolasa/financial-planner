@@ -8,6 +8,7 @@ import { ChartConfig } from '../../shared/chart/chart-config.model';
 @Component({
   selector: 'app-swp-result',
   templateUrl: './swp-result.component.html',
+  styleUrls: ['./swp-result.component.css'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, ChartComponent]
 })
