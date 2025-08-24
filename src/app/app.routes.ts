@@ -5,6 +5,7 @@ import { ExpensesComponent } from './components/expenses.component';
 import { InvestmentsComponent } from './components/investments.component';
 import { LiabilitiesComponent } from './components/liabilities.component';
 import { SwpPlanComponent } from './components/swp/swp-plan.component';
+import { XirrFormComponent } from './components/calculators/xirr/xirr.component';
 
 export const routes: Routes = [
 	{ path: '', component: SwpPlanComponent, pathMatch: 'full' },
@@ -13,5 +14,8 @@ export const routes: Routes = [
 	{ path: 'expenses', component: ExpensesComponent },
 	{ path: 'investments', component: InvestmentsComponent },
 	{ path: 'liabilities', component: LiabilitiesComponent },
+
+	// Calculators
+	{ path: 'calculators/xirr', component: XirrFormComponent },
 	{ path: '**', redirectTo: '' }
 ];
