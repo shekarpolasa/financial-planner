@@ -123,17 +123,26 @@ export class SwpPlanComponent {
     emiSchedules: { emi: number, remainingMonths: number }[]
   ): any[] {
     const momTable = [];
-    const maxSwpMonths = 50 * 12;
+    const maxSwpMonths = 50 * 12; // Limit to 50 years of SWP
     let swpMonths = 0;
     let simDate = new Date(startDate);
     let balance = initialBalance;
     let monthlyExpenses = initialMonthlyExpenses;
 
-    while (balance > 0 && swpMonths < maxSwpMonths) {
-      const activeEMI = emiSchedules.reduce((sum, l) => l.remainingMonths > 0 ? sum + l.emi : sum, 0);
-      const withdrawal = monthlyExpenses + activeEMI;
-      const growth = balance * (annualReturnRate / 12 / 100);
+    // Calculate monthly return rate from the annual return rate
+    const monthlyReturnRate = Math.pow(1 + annualReturnRate / 100, 1 / 12) - 1;
 
+    while (balance > 0 && swpMonths < maxSwpMonths) {
+      // Calculate the total EMI for the current month
+      const activeEMI = emiSchedules.reduce((sum, l) => l.remainingMonths > 0 ? sum + l.emi : sum, 0);
+
+      // Monthly withdrawal is expenses + total EMI
+      const withdrawal = monthlyExpenses + activeEMI;
+
+      // Apply growth for this month based on monthly compounding
+      const growth = balance * monthlyReturnRate;
+
+      // Store the data for the month
       momTable.push({
         period: new Date(simDate),
         corpus: balance,
@@ -144,15 +153,21 @@ export class SwpPlanComponent {
         net: growth - withdrawal
       });
 
+      // Update the balance after withdrawal and growth
       balance = balance + growth - withdrawal;
+
+      // Reduce the remaining months for each liability's EMI
       emiSchedules.forEach(l => l.remainingMonths--);
+
       swpMonths++;
 
+      // Apply inflation to expenses every year (monthly inflation)
       if (simDate.getMonth() === 11) {
         monthlyExpenses *= 1 + inflationRate / 100;
       }
 
-      simDate = new Date(simDate.setMonth(simDate.getMonth() + 1));
+      // Move to the next month
+      simDate.setMonth(simDate.getMonth() + 1);
     }
 
     return momTable;
