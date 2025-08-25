@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FinancePlannerService } from '../../../finance-planner.service';
-import { ChartComponent } from "../../shared/chart/chart.component";
-import { ChartConfig } from '../../shared/chart/chart-config.model';
+import { FinancePlannerService } from '../../../shared/services/finance-planner.service';
+import { ChartComponent } from "../../../shared/components/chart/chart.component";
+import { ChartConfig } from '../../../shared/components/chart/chart-config.model';
 
 @Component({
   selector: 'app-swp-result',
@@ -32,7 +32,7 @@ export class SwpResultComponent {
 
   renderCharts() {
     this.yoyChartConfig = {
-      title: 'SWP Plan - Yearly Overview',
+      title: 'SWP - Yearly Overview',
       type: 'line',
       labels: this.yoyTable.map(row => row.period),
       datasets: [
@@ -58,7 +58,7 @@ export class SwpResultComponent {
     };
 
     this.momChartConfig = {
-      title: 'SWP Plan - Monthly Overview',
+      title: 'SWP - Monthly Overview',
       type: 'line',
       labels: this.momTable.map(row => this.formatMonthYear(row.period)),
       datasets: [

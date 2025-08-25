@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FinancePlannerService, Liability } from '../finance-planner.service';
+import { FinancePlannerService, Liability } from '../shared/services/finance-planner.service';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({
@@ -38,11 +38,11 @@ export class LiabilitiesComponent implements OnInit, OnDestroy {
     return 0;
   }
 
-getTotalInterest(liability: Liability): number {
-  const emi = this.getEMI(liability);
-  const totalPayment = emi * (+liability.years) * 12;
-  return totalPayment - (+liability.principal);
-}
+  getTotalInterest(liability: Liability): number {
+    const emi = this.getEMI(liability);
+    const totalPayment = emi * (+liability.years) * 12;
+    return totalPayment - (+liability.principal);
+  }
 
   ngOnInit(): void {
     this.liabilitiesSub = this.liabilities$.subscribe(list => {

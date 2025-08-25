@@ -1,0 +1,143 @@
+<div class="row">
+  <div class="col-md-6">
+    <!-- Incomes -->
+    <div class="mb-4">
+      <h4>Incomes</h4>
+      <div>
+        @if(incomes.length === 0)
+        {
+        <div class="text-center text-muted mt-3">
+          No income added yet
+        </div>
+        }
+        @else
+        {
+        <div *ngFor="let income of incomes" class="expense-item d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>{{income.name}}</strong><br />
+            <span class="text-success">₹{{income.amount | number:'1.0-2'}}</span>
+            <span class="badge bg-secondary ms-2">{{income.type}}</span><br />
+            <span *ngIf="income.stopDate">
+              <small class="text-muted">
+                Stop Date: {{ income.stopDate | date:'longDate' }}
+              </small>
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Investments -->
+    <div class="mb-4">
+      <h4>Investments</h4>
+      <div>
+        @if(investments.length === 0)
+        {
+        <div class="text-center text-muted mt-3">
+          No investments added yet
+        </div>
+        }
+        @else
+        {
+        <div *ngFor="let investment of investments"
+          class="investment-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ investment.type }}</strong><br>
+            <span *ngIf="investment.type === 'SIP'">₹{{ investment.monthlyAmount | number:'1.0-2'
+              }}/month</span>
+            <span *ngIf="investment.type === 'Lumpsum'">₹{{ investment.amount | number:'1.0-2'
+              }}</span><br>
+            <small class="text-muted">
+              {{ investment.expectedReturn }}% for {{ investment.years }} years
+            </small><br>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <!-- Expenses -->
+    <div class="mb-4">
+      <h4>Expenses</h4>
+      <div>
+        @if(expenses.length === 0)
+        {
+        <div class="text-muted text-center mt-3">No expenses added yet</div>
+        }
+        @else
+        {
+        <div *ngFor="let expense of expenses" class="expense-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{expense.name}}</strong><br />
+            <span class="text-success">₹{{expense.amount | number:'1.0-2'}}</span>
+            <span class="badge bg-secondary ms-2">{{expense.type}}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Liabilities -->
+    <div class="mb-4">
+      <h4>Liabilities</h4>
+      <div>
+        @if(liabilities.length === 0)
+        {
+        <div class="text-center text-muted mt-3">
+          No liabilities added yet
+        </div>
+        }
+        @else
+        {
+        <div *ngFor="let liability of liabilities"
+          class="expense-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ liability.name }}</strong><br>
+            <span class="text-info">Principal: ₹{{ liability.principal | number:'1.0-0' }}</span><br>
+            <span class="text-warning">{{ liability.interestRate }}% for {{ liability.years }}
+              years</span><br>
+            <!-- <span class="text-danger">EMI: ₹{{ getEMI(liability) | number:'1.0-0' }}</span><br>
+            <small class="text-muted">Total Interest: ₹{{ getTotalInterest(liability) | number:'1.0-0'
+              }}</small> -->
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <!-- SWP Plan -->
+    <div class="mb-4">
+      <h4>SWP Plan</h4>
+      <div *ngIf="swpPlan; else noSwp">
+        <div class="summary-grid" *ngIf="swpPlan.sustainabilityYears !== null">
+          <div class="summary-card"
+            [ngClass]="swpPlan.sustainabilityYears < 10 ? 'danger-card' : (swpPlan.sustainabilityYears < 20 ? 'warning-card' : 'info-card')">
+            <h6><i class="fas fa-clock me-2"></i>Sustainability Period</h6>
+            <h4>{{swpPlan.sustainabilityYears}} Years</h4>
+            <small>From {{swpPlan.formValues.startDate | date:'MMM yyyy'}} onwards</small>
+          </div>
+          <div class="summary-card">
+            <h6><i class="fas fa-piggy-bank me-2"></i>Corpus at SWP Start</h6>
+            <h4>₹{{ swpPlan.totalInvestmentValue | number:'1.0-0' }}</h4>
+            <small>Maturity value as of {{swpPlan.formValues.startDate | date:'MMM yyyy'}}</small>
+          </div>
+
+          <div class="summary-card warning-card">
+            <h6><i class="fas fa-chart-line me-2"></i>Total Monthly Outflow at SWP Start</h6>
+            <h4>₹{{ swpPlan.totalMonthlyOutflow | number:'1.0-0' }}</h4>
+            <small>Expenses ({{swpPlan.formValues.inflationRate}}% inflation) + EMI</small>
+          </div>
+        </div>
+      </div>
+      <ng-template #noSwp>
+        <p class="text-muted">SWP plan not calculated yet.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

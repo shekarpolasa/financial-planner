@@ -2,12 +2,12 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header">
-                <h5 class="mb-0">SWP Planning</h5>
+                <h5 class="mb-0">SWP</h5>
             </div>
             <div class="card-body">
                 <form [formGroup]="swpForm" (ngSubmit)="calculateSWP()">
                     <div class="mb-3">
-                        <label for="startDate" class="form-label">SWP Start Date</label>
+                        <label for="startDate" class="form-label">Start Date</label>
                         <input id="startDate" class="form-control" formControlName="startDate" type="date" />
                     </div>
                     <div class="mb-3">
@@ -20,7 +20,7 @@
                             type="number" />
                     </div>
                     <div class="mb-3">
-                        <label for="corpusAmount" class="form-label">Corpus Amount</label>
+                        <label for="corpusAmount" class="form-label">Corpus Amount (₹)</label>
                         <input id="corpusAmount" class="form-control" formControlName="corpusAmount" type="number"
                             placeholder="" />
                     </div>

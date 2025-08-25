@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FinancePlannerService, Expense } from '../finance-planner.service';
+import { FinancePlannerService, Expense } from '../shared/services/finance-planner.service';
 import { Observable, Subscription } from 'rxjs';
 
 @Component({

@@ -3,10 +3,11 @@
     <div class="p-4">
       <h1 class="text-center mb-4">
         <i class="fas fa-chart-line me-3"></i>Financial Planner
+        <app-scenario-switcher></app-scenario-switcher>
       </h1>
       <nav class="nav nav-tabs mb-4">
-        <!-- <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
-          <i class="fas fa-tachometer-alt me-2"></i>Dashboard</a> -->
+        <a class="nav-link" routerLink="/overview" routerLinkActive="active">
+          <i class="fas fa-tachometer-alt me-2"></i>Overview</a>
         <a class="nav-link" routerLink="/income" routerLinkActive="active">
           <i class="fas fa-rupee-sign me-2"></i>Income</a>
         <a class="nav-link" routerLink="/investments" routerLinkActive="active">
@@ -16,9 +17,9 @@
         <a class="nav-link" routerLink="/liabilities" routerLinkActive="active">
           <i class="fas fa-home me-2"></i>Liabilities</a>
         <a class="nav-link" routerLink="/" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">
-          <i class="fas fa-chart-pie me-2"></i>SWP Plan</a>
+          <i class="fas fa-chart-pie me-2"></i>SWP</a>
         <a class="nav-link" routerLink="/calculators/xirr" routerLinkActive="active">
-          <i class="fas fa-chart-pie me-2"></i>XIRR</a>
+          <i class="fas fa-calculator me-2"></i>XIRR</a>
       </nav>
       <router-outlet></router-outlet>
     </div>

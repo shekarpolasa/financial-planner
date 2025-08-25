@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FinancePlannerService, Expense, Liability, Investment } from '../../finance-planner.service';
+import { FinancePlannerService, Expense, Liability, Investment } from '../../shared/services/finance-planner.service';
 import { SwpResultComponent } from "./swp-result/swp-result.component";
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 

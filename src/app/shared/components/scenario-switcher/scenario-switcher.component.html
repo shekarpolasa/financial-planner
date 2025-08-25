@@ -1,0 +1,68 @@
+<div class="dropdown d-inline-block">
+    <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="true"
+        aria-expanded="false" (click)="toggleDropdown()">
+        {{ activeScenario?.name || 'Select Scenario' }}
+    </button>
+
+    <ul class="dropdown-menu" style="min-width: 300px;" [class.show]="isDropdownOpen">
+        <li *ngFor="let scenario of scenarios">
+            <div class="dropdown-item d-flex align-items-center justify-content-between"
+                (click)="selectScenario(scenario)">
+
+                <!-- Editable name -->
+                <div class="flex-grow-1 me-2" *ngIf="editingScenarioId !== scenario.id; else editTemplate">
+                    <div class="position-relative">
+                        {{ scenario.name }}
+                        @if(scenario.id === activeScenario?.id)
+                        {
+                        <span class="badge text-bg-primary">A</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Edit input -->
+                <ng-template #editTemplate>
+                    <input [(ngModel)]="editedName" class="form-control form-control-sm me-2"
+                        (click)="$event.stopPropagation()" (keyup.enter)="saveEditedName(scenario)"
+                        (blur)="saveEditedName(scenario)" />
+                </ng-template>
+
+                <!-- Action buttons -->
+                <div class="text-nowrap ms-auto" (click)="$event.stopPropagation()">
+                    @if(scenario.id !== 'baseline')
+                    {
+                    <button class="btn btn-sm" (click)="startEditing(scenario, $event)">
+                        @if(editingScenarioId === scenario.id)
+                        {
+                        <i class="fas fa-save"></i>
+                        }
+                        @else
+                        {
+                        <i class="fas fa-edit"></i>
+                        }
+                    </button>
+
+                    <button class="btn btn-sm" (click)="deleteScenario(scenario, $event)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    }
+                </div>
+            </div>
+        </li>
+
+        <li>
+            <hr class="dropdown-divider" />
+        </li>
+
+        <li>
+            <div class="dropdown-item d-flex align-items-center">
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="newScenarioName"
+                    (keyup.enter)="createScenario()" placeholder="Enter new scenario" autofocus />
+                <button class="btn btn-sm btn-primary ms-2" (click)="createScenario()"
+                    [disabled]="!newScenarioName.trim()">
+                    Add
+                </button>
+            </div>
+        </li>
+    </ul>
+</div>
