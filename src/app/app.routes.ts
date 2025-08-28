@@ -8,12 +8,13 @@ import { XirrFormComponent } from './components/calculators/xirr/xirr.component'
 import { ScenarioOverviewComponent } from './components/scenario-overview.component';
 
 export const routes: Routes = [
-	{ path: '', component: SwpPlanComponent, pathMatch: 'full' },
-	{ path: 'overview', component: ScenarioOverviewComponent },
+	{ path: '', component: ScenarioOverviewComponent, pathMatch: 'full' },
+	// { path: 'overview', component: ScenarioOverviewComponent },
 	{ path: 'income', component: IncomeComponent },
 	{ path: 'expenses', component: ExpensesComponent },
 	{ path: 'investments', component: InvestmentsComponent },
 	{ path: 'liabilities', component: LiabilitiesComponent },
+	{ path: 'swp', component: SwpPlanComponent },
 
 	// Calculators
 	{ path: 'calculators/xirr', component: XirrFormComponent },

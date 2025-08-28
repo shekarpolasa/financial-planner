@@ -6,7 +6,7 @@
       <div>
         @if(incomes.length === 0)
         {
-        <div class="text-center text-muted mt-3">
+        <div class="alert alert-secondary text-center text-muted mt-3">
           No income added yet
         </div>
         }
@@ -34,7 +34,7 @@
       <div>
         @if(investments.length === 0)
         {
-        <div class="text-center text-muted mt-3">
+        <div class="alert alert-secondary text-center text-muted mt-3">
           No investments added yet
         </div>
         }
@@ -64,7 +64,7 @@
       <div>
         @if(expenses.length === 0)
         {
-        <div class="text-muted text-center mt-3">No expenses added yet</div>
+        <div class="alert alert-secondary text-muted text-center mt-3">No expenses added yet</div>
         }
         @else
         {
@@ -85,7 +85,7 @@
       <div>
         @if(liabilities.length === 0)
         {
-        <div class="text-center text-muted mt-3">
+        <div class="alert alert-secondary text-center text-muted mt-3">
           No liabilities added yet
         </div>
         }
@@ -136,7 +136,7 @@
         </div>
       </div>
       <ng-template #noSwp>
-        <p class="text-muted">SWP plan not calculated yet.</p>
+        <div class="alert alert-secondary text-muted text-center mt-3">SWP plan not calculated yet</div>
       </ng-template>
     </div>
   </div>

@@ -1,24 +1,30 @@
-<div class="dropdown d-inline-block">
-    <button class="btn btn-sm btn-secondary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="true"
-        aria-expanded="false" (click)="toggleDropdown()">
+<div class="btn-group">
+    <button class="btn btn-sm btn-secondary rounded-pill dropdown-toggle" data-bs-toggle="dropdown"
+        aria-expanded="false" (click)="toggleDropdown()" style="min-width: 300px;">
         {{ activeScenario?.name || 'Select Scenario' }}
     </button>
 
-    <ul class="dropdown-menu" style="min-width: 300px;" [class.show]="isDropdownOpen">
+    <ul class="dropdown-menu  dropdown-menu-end" [class.show]="isDropdownOpen">
+        <li>
+            <h6 class="dropdown-header">Select Scenario</h6>
+        </li>
         <li *ngFor="let scenario of scenarios">
             <div class="dropdown-item d-flex align-items-center justify-content-between"
-                (click)="selectScenario(scenario)">
+                [class.bg-secondary]="scenario.id === activeScenario?.id" (click)="selectScenario(scenario)">
 
                 <!-- Editable name -->
-                <div class="flex-grow-1 me-2" *ngIf="editingScenarioId !== scenario.id; else editTemplate">
-                    <div class="position-relative">
-                        {{ scenario.name }}
-                        @if(scenario.id === activeScenario?.id)
-                        {
-                        <span class="badge text-bg-primary">A</span>
-                        }
-                    </div>
-                </div>
+                <span class="d-inline-block text-truncate" style="max-width: 200px;">
+                    @if (editingScenarioId === scenario.id)
+                    {
+                    <input [(ngModel)]="editedName" class="form-control form-control-sm me-2"
+                        (click)="$event.stopPropagation()" (keyup.enter)="saveEditedName(scenario)"
+                        (blur)="saveEditedName(scenario)" />
+                    }
+                    @else
+                    {
+                    {{scenario.name }}
+                    }
+                </span>
 
                 <!-- Edit input -->
                 <ng-template #editTemplate>

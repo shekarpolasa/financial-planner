@@ -5,7 +5,7 @@
     "finance"
   ],
   "name": "Financial Planner",
-  "short_name": "FinPlanner",
+  "short_name": "Financial Planner",
   "start_url": "/financial-planner",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -20,6 +20,12 @@
       "src": "logo_512x512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "logo_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
