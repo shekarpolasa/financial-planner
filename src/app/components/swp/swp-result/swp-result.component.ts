@@ -96,7 +96,8 @@ export class SwpResultComponent {
             growth: 0,
             totalExpenses: 0,
             totalEMI: 0,
-            withdrawal: 0
+            withdrawal: 0,
+            shortfall: 0
           });
         }
         const data = yoyMap.get(year);
@@ -104,6 +105,7 @@ export class SwpResultComponent {
         data.totalExpenses += entry.totalExpenses;
         data.totalEMI += entry.totalEMI;
         data.withdrawal += entry.withdrawal;
+        data.shortfall += entry.shortfall || 0;
         data.net = data.growth - data.withdrawal;
       });
   

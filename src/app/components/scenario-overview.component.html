@@ -28,14 +28,14 @@
       </div>
     </div>
 
-    <!-- Investments -->
+    <!-- Assets -->
     <div class="mb-4">
-      <h4>Investments</h4>
+      <h4>Assets</h4>
       <div>
         @if(investments.length === 0)
         {
         <div class="alert alert-secondary text-center text-muted mt-3">
-          No investments added yet
+          No assets added yet
         </div>
         }
         @else
@@ -43,13 +43,26 @@
         <div *ngFor="let investment of investments"
           class="investment-item d-flex justify-content-between align-items-center">
           <div>
-            <strong>{{ investment.type }}</strong><br>
-            <span *ngIf="investment.type === 'SIP'">₹{{ investment.monthlyAmount | number:'1.0-2'
-              }}/month</span>
-            <span *ngIf="investment.type === 'Lumpsum'">₹{{ investment.amount | number:'1.0-2'
-              }}</span><br>
+            <strong>
+              {{ investment.type }}
+              @if(investment.name)
+              {
+              ({{ investment.name }})
+              }
+            </strong><br>
+            <span *ngIf="investment.amount">
+              Current value: ₹{{ investment.amount | number:'1.0-2'}}
+              <br>
+            </span>
+            <span *ngIf="investment.monthlyContribution">Monthly contribution: ₹{{ investment.monthlyContribution |
+              number:'1.0-2'
+              }}/month
+              <br>
+            </span>
             <small class="text-muted">
-              {{ investment.expectedReturn }}% for {{ investment.years }} years
+              <span *ngIf="investment.expectedReturn || investment.expectedReturn === 0">{{ investment.expectedReturn
+                }}% annual growth</span>
+              <span *ngIf="investment.years"> for {{ investment.years }} years</span>
             </small><br>
           </div>
         </div>
@@ -96,8 +109,9 @@
           <div>
             <strong>{{ liability.name }}</strong><br>
             <span class="text-info">Principal: ₹{{ liability.principal | number:'1.0-0' }}</span><br>
-            <span class="text-warning">{{ liability.interestRate }}% for {{ liability.years }}
-              years</span><br>
+            <span class="text-warning">{{ liability.interestRate }}% for {{ liability.tenureMonths ?? (liability.years
+              || 0) * 12 }}
+              months</span><br>
             <!-- <span class="text-danger">EMI: ₹{{ getEMI(liability) | number:'1.0-0' }}</span><br>
             <small class="text-muted">Total Interest: ₹{{ getTotalInterest(liability) | number:'1.0-0'
               }}</small> -->
@@ -119,7 +133,7 @@
           <div class="summary-card"
             [ngClass]="swpPlan.sustainabilityYears < 10 ? 'danger-card' : (swpPlan.sustainabilityYears < 20 ? 'warning-card' : 'info-card')">
             <h6><i class="fas fa-clock me-2"></i>Sustainability Period</h6>
-            <h4>{{swpPlan.sustainabilityYears}} Years</h4>
+            <h4>{{ swpPlan.sustainabilityCapped ? 'At least ' : '' }}{{swpPlan.sustainabilityYears}} Years</h4>
             <small>From {{swpPlan.formValues.startDate | date:'MMM yyyy'}} onwards</small>
           </div>
           <div class="summary-card">
@@ -133,6 +147,9 @@
             <h4>₹{{ swpPlan.totalMonthlyOutflow | number:'1.0-0' }}</h4>
             <small>Expenses ({{swpPlan.formValues.inflationRate}}% inflation) + EMI</small>
           </div>
+        </div>
+        <div class="alert alert-info mt-3" *ngIf="swpPlan.sustainabilityCapped">
+          The projection reached its 50-year limit with a remaining balance, so the corpus may last longer.
         </div>
       </div>
       <ng-template #noSwp>

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FinancePlannerService, Investment } from '../shared/services/finance-planner.service';
-import { Observable, Subscription } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-investments',
@@ -15,45 +15,44 @@ export class InvestmentsComponent implements OnInit, OnDestroy {
   investmentForm: FormGroup;
   editingId: number | null = null;
   monthlyTotal = 0;
-  yearlyTotal = 0;
+  currentValueTotal = 0;
   private investmentsSub: Subscription | undefined;
 
   constructor(private fb: FormBuilder, private financeService: FinancePlannerService) {
     this.investmentForm = this.fb.group({
-      type: ['SIP'],
-      monthlyAmount: [''],
+      name: [''],
+      type: ['Cash'],
       amount: [''],
+      monthlyContribution: [''],
       expectedReturn: [''],
       years: ['']
     });
-    this.investments$ = this.financeService.investments$;
+    this.investments$ = this.financeService.investments$.pipe(
+      map(investments => investments.filter(investment => investment.type !== 'SIP' && investment.type !== 'Lumpsum'))
+    );
   }
 
   getMaturityValue(investment: Investment): number {
-    if (investment.type === 'SIP') {
-      const monthlyAmount = +(investment.monthlyAmount || 0);
-      const annualRate = +(investment.expectedReturn || 0);
-      const years = +(investment.years || 0);
-      const monthlyRate = annualRate / 12 / 100;
-      const months = years * 12;
-      if (monthlyAmount && monthlyRate && months) {
-        return monthlyAmount * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
-      }
-    } else if (investment.type === 'Lumpsum') {
-      const amount = +(investment.amount || 0);
-      const annualRate = +(investment.expectedReturn || 0);
-      const years = +(investment.years || 0);
-      if (amount && annualRate && years) {
-        return amount * Math.pow(1 + annualRate / 100, years);
-      }
+    const currentValue = +(investment.amount || 0);
+    const monthlyContribution = +(investment.monthlyContribution || 0);
+    const monthlyRate = +(investment.expectedReturn || 0) / 12 / 100;
+    const months = +(investment.years || 0) * 12;
+
+    if (months <= 0) {
+      return currentValue;
     }
-    return 0;
+
+    const currentValueAtMaturity = currentValue * Math.pow(1 + monthlyRate, months);
+    const contributionsAtMaturity = monthlyRate === 0
+      ? monthlyContribution * months
+      : monthlyContribution * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+    return currentValueAtMaturity + contributionsAtMaturity;
   }
 
   ngOnInit(): void {
     this.investmentsSub = this.investments$.subscribe(list => {
-      this.monthlyTotal = list.filter(i => i.type === 'SIP').reduce((acc, i) => acc + (+(i.monthlyAmount || 0)), 0);
-      this.yearlyTotal = list.filter(i => i.type === 'Lumpsum').reduce((acc, i) => acc + (+(i.amount || 0)), 0);
+      this.monthlyTotal = list.reduce((acc, i) => acc + (+(i.monthlyContribution || 0)), 0);
+      this.currentValueTotal = list.reduce((acc, i) => acc + (+(i.amount || 0)), 0);
     });
   }
 
@@ -70,16 +69,16 @@ export class InvestmentsComponent implements OnInit, OnDestroy {
     } else {
       this.financeService.addInvestment(this.investmentForm.value);
     }
-    this.investmentForm.reset({ type: 'SIP' });
+    this.investmentForm.reset({ name: '', type: 'Cash' });
   }
 
   edit(investment: Investment) {
-    this.investmentForm.patchValue(investment);
+    this.investmentForm.patchValue({ ...investment, name: investment.name || '' });
     this.editingId = investment.id;
   }
 
   cancelEdit() {
-    this.investmentForm.reset({ type: 'SIP' });
+    this.investmentForm.reset({ name: '', type: 'Cash' });
     this.editingId = null;
   }
 

@@ -21,9 +21,10 @@ export interface Expense {
 
 export interface Investment {
   id: number;
+  name?: string;
   type: string;
-  monthlyAmount?: number;
   amount?: number;
+  monthlyContribution?: number;
   expectedReturn?: number;
   years?: number;
 }
@@ -33,11 +34,13 @@ export interface Liability {
   name: string;
   principal: number;
   interestRate: number;
-  years: number;
+  tenureMonths?: number;
+  years?: number;
 }
 
 export interface SWPPlan {
   sustainabilityYears: number | null;
+  sustainabilityCapped?: boolean;
   totalInvestmentValue: number;
   totalMonthlyOutflow: number;
   formValues?: any;

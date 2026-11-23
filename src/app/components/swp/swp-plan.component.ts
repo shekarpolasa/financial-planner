@@ -14,6 +14,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 export class SwpPlanComponent {
   swpForm: FormGroup;
   sustainabilityYears: number | null = null;
+  sustainabilityCapped = false;
   totalInvestmentValue: number = 0;
   totalMonthlyOutflow: number = 0;
 
@@ -28,12 +29,16 @@ export class SwpPlanComponent {
     this.financeService.swpPlan$.subscribe(plan => {
       if (plan) {
         this.sustainabilityYears = plan.sustainabilityYears;
+        this.sustainabilityCapped = plan.sustainabilityCapped ?? false;
         this.totalInvestmentValue = plan.totalInvestmentValue;
         this.totalMonthlyOutflow = plan.totalMonthlyOutflow;
 
         if (plan.formValues) {
           this.swpForm.patchValue(plan.formValues);
         }
+      } else {
+        this.sustainabilityYears = null;
+        this.sustainabilityCapped = false;
       }
     });
 
@@ -44,7 +49,7 @@ export class SwpPlanComponent {
       )
       .subscribe((dateStr: string) => {
         if (dateStr) {
-          const date = new Date(dateStr);
+          const date = this.parseDateInput(dateStr);
           const corpus = this.calculateCorpusValue(date);
           this.swpForm.get('corpusAmount')?.setValue(+corpus.toFixed(0));
         }
@@ -53,7 +58,7 @@ export class SwpPlanComponent {
 
   calculateSWP(): void {
     const formValues = this.swpForm.value;
-    const swpStartDate = new Date(formValues.startDate);
+    const swpStartDate = this.parseDateInput(formValues.startDate);
     const annualReturnRate = +formValues.annualReturnRate;
     const inflationRate = +formValues.inflationRate;
     const userCorpus = +formValues.corpusAmount;
@@ -67,24 +72,35 @@ export class SwpPlanComponent {
     const expenses = (this.financeService as any)._expenses.value as Expense[];
     const liabilities = (this.financeService as any)._liabilities.value as Liability[];
 
-    const yearsToSwpStart = swpStartDate.getFullYear() - currentDate.getFullYear();
-    let inflationAdjustedExpenses = this.getInflationAdjustedExpenses(expenses, inflationRate, yearsToSwpStart);
-    const emiSchedules = this.getEmiSchedules(liabilities, yearsToSwpStart);
+    const monthsToSwpStart = this.monthDiff(currentDate, swpStartDate);
+    const yearsToSwpStart = monthsToSwpStart / 12;
+    const inflationAdjustedExpenses = this.getInflationAdjustedExpenses(expenses, inflationRate, yearsToSwpStart);
+    const emiSchedules = this.getEmiSchedules(liabilities, monthsToSwpStart);
 
     // // Step 1: Accumulate corpus till SWP start
     // const { balance: startBalance, swpStartSimDate } = this.accumulateCorpusUntilStart(userCorpus, annualReturnRate, currentDate, swpStartDate);
     // const totalInvestmentValue = startBalance;
 
     // Step 2: Run SWP simulation
-    const momTable = this.simulateSwpPhase(swpStartDate, userCorpus, annualReturnRate, inflationRate, inflationAdjustedExpenses, emiSchedules);
+    const simulation = this.simulateSwpPhase(
+      swpStartDate,
+      userCorpus,
+      annualReturnRate,
+      inflationRate,
+      inflationAdjustedExpenses,
+      emiSchedules
+    );
+    const momTable = simulation.momTable;
 
     // Final Output Calculations
-    this.sustainabilityYears = +(momTable.length / 12).toFixed(1);
+    this.sustainabilityYears = Math.floor((simulation.sustainabilityMonths / 12) * 10) / 10;
+    this.sustainabilityCapped = simulation.capped;
     this.totalInvestmentValue = momTable.length ? momTable[0].corpus : 0;
-    this.totalMonthlyOutflow = momTable.length ? momTable[0].withdrawal : 0;
+    this.totalMonthlyOutflow = momTable.length ? momTable[0].scheduledWithdrawal : 0;
 
     const swp = {
       sustainabilityYears: this.sustainabilityYears,
+      sustainabilityCapped: this.sustainabilityCapped,
       totalInvestmentValue: this.totalInvestmentValue,
       totalMonthlyOutflow: this.totalMonthlyOutflow,
       formValues,
@@ -101,15 +117,19 @@ export class SwpPlanComponent {
     return baseMonthly * Math.pow(1 + inflationRate / 100, Math.max(0, yearsToSwpStart));
   }
 
-  private getEmiSchedules(liabilities: Liability[], yearsToSwpStart: number): { emi: number, remainingMonths: number }[] {
+  private getEmiSchedules(liabilities: Liability[], monthsToSwpStart: number): { emi: number, remainingMonths: number }[] {
     return liabilities.map(l => {
       const principal = +l.principal;
       const rate = +l.interestRate / 12 / 100;
-      const months = +l.years * 12;
-      const emi = principal * rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1);
+      const months = +(l.tenureMonths ?? (l.years || 0) * 12);
+      const emi = months <= 0
+        ? 0
+        : rate === 0
+          ? principal / months
+          : principal * rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1);
       return {
         emi,
-        remainingMonths: Math.max(0, months - yearsToSwpStart * 12)
+        remainingMonths: Math.max(0, Math.ceil(months - monthsToSwpStart))
       };
     });
   }
@@ -121,10 +141,11 @@ export class SwpPlanComponent {
     inflationRate: number,
     initialMonthlyExpenses: number,
     emiSchedules: { emi: number, remainingMonths: number }[]
-  ): any[] {
+  ): { momTable: any[]; sustainabilityMonths: number; capped: boolean } {
     const momTable = [];
     const maxSwpMonths = 50 * 12; // Limit to 50 years of SWP
     let swpMonths = 0;
+    let sustainabilityMonths = 0;
     let simDate = new Date(startDate);
     let balance = initialBalance;
     let monthlyExpenses = initialMonthlyExpenses;
@@ -137,10 +158,13 @@ export class SwpPlanComponent {
       const activeEMI = emiSchedules.reduce((sum, l) => l.remainingMonths > 0 ? sum + l.emi : sum, 0);
 
       // Monthly withdrawal is expenses + total EMI
-      const withdrawal = monthlyExpenses + activeEMI;
+      const scheduledWithdrawal = monthlyExpenses + activeEMI;
 
       // Apply growth for this month based on monthly compounding
       const growth = balance * monthlyReturnRate;
+      const availableBalance = Math.max(0, balance + growth);
+      const withdrawal = Math.min(scheduledWithdrawal, availableBalance);
+      const shortfall = scheduledWithdrawal - withdrawal;
 
       // Store the data for the month
       momTable.push({
@@ -149,20 +173,29 @@ export class SwpPlanComponent {
         growth,
         totalExpenses: monthlyExpenses,
         totalEMI: activeEMI,
+        scheduledWithdrawal,
         withdrawal,
+        shortfall,
         net: growth - withdrawal
       });
 
       // Update the balance after withdrawal and growth
-      balance = balance + growth - withdrawal;
+      balance = availableBalance - withdrawal;
+      sustainabilityMonths += scheduledWithdrawal > 0
+        ? withdrawal / scheduledWithdrawal
+        : 1;
 
       // Reduce the remaining months for each liability's EMI
       emiSchedules.forEach(l => l.remainingMonths--);
 
       swpMonths++;
 
-      // Apply inflation to expenses every year (monthly inflation)
-      if (simDate.getMonth() === 11) {
+      if (shortfall > 0) {
+        break;
+      }
+
+      // Apply annual inflation after each 12 simulated months, relative to the SWP start.
+      if (swpMonths % 12 === 0) {
         monthlyExpenses *= 1 + inflationRate / 100;
       }
 
@@ -170,7 +203,11 @@ export class SwpPlanComponent {
       simDate.setMonth(simDate.getMonth() + 1);
     }
 
-    return momTable;
+    return {
+      momTable,
+      sustainabilityMonths,
+      capped: swpMonths === maxSwpMonths && balance > 0
+    };
   }
 
   private calculateCorpusValue(untilDate: Date): number {
@@ -179,24 +216,17 @@ export class SwpPlanComponent {
     const now = new Date();
 
     for (let inv of investments) {
+      if (inv.type === 'SIP' || inv.type === 'Lumpsum') continue;
       const months = this.monthDiff(now, untilDate);
       if (months <= 0) continue;
 
-      if (inv.type === 'SIP') {
-        const amount = +(inv.monthlyAmount || 0);
-        const rate = +(inv.expectedReturn || 0) / 12 / 100;
-        // const n = Math.min(months, +(inv.years || 0) * 12);
-        const n = months; // Assume SIP continues till the target date
-        if (amount && rate && n)
-          total += amount * (((Math.pow(1 + rate, n) - 1) / rate) * (1 + rate));
-      } else {
-        const amount = +(inv.amount || 0);
-        const rate = +(inv.expectedReturn || 0);
-        // const years = Math.min(months / 12, +(inv.years || 0));
-        const years = months / 12; // Assume Lumpsum continues till the target date
-        if (amount && rate && years >= 0)
-          total += amount * Math.pow(1 + rate / 100, years);
-      }
+      const currentValue = +(inv.amount || 0);
+      const monthlyContribution = +(inv.monthlyContribution || 0);
+      const monthlyRate = +(inv.expectedReturn || 0) / 12 / 100;
+      total += currentValue * Math.pow(1 + monthlyRate, months);
+      total += monthlyRate === 0
+        ? monthlyContribution * months
+        : monthlyContribution * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
     }
 
     // total += this.financeService['load']('cash') || 0;
@@ -204,7 +234,46 @@ export class SwpPlanComponent {
   }
 
   private monthDiff(start: Date, end: Date): number {
-    return Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()));
+    const normalizedStart = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const normalizedEnd = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    if (normalizedEnd <= normalizedStart) {
+      return 0;
+    }
+
+    let wholeMonths =
+      (normalizedEnd.getFullYear() - normalizedStart.getFullYear()) * 12 +
+      normalizedEnd.getMonth() - normalizedStart.getMonth();
+    let monthAnchor = this.addMonthsClamped(normalizedStart, wholeMonths);
+
+    if (monthAnchor > normalizedEnd) {
+      wholeMonths--;
+      monthAnchor = this.addMonthsClamped(normalizedStart, wholeMonths);
+    }
+
+    const nextMonthAnchor = this.addMonthsClamped(normalizedStart, wholeMonths + 1);
+    const elapsedInMonth = normalizedEnd.getTime() - monthAnchor.getTime();
+    const durationOfMonth = nextMonthAnchor.getTime() - monthAnchor.getTime();
+
+    return wholeMonths + elapsedInMonth / durationOfMonth;
+  }
+
+  private addMonthsClamped(date: Date, months: number): Date {
+    const targetMonth = new Date(date.getFullYear(), date.getMonth() + months, 1);
+    const lastDayOfTargetMonth = new Date(
+      targetMonth.getFullYear(),
+      targetMonth.getMonth() + 1,
+      0
+    ).getDate();
+    return new Date(
+      targetMonth.getFullYear(),
+      targetMonth.getMonth(),
+      Math.min(date.getDate(), lastDayOfTargetMonth)
+    );
+  }
+
+  private parseDateInput(dateString: string): Date {
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day);
   }
 
   formatMonthYear(date: Date): string {

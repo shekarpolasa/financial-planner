@@ -23,7 +23,7 @@ export class LiabilitiesComponent implements OnInit, OnDestroy {
       name: [''],
       principal: [''],
       interestRate: [''],
-      years: ['']
+      tenureMonths: ['']
     });
     this.liabilities$ = this.financeService.liabilities$;
   }
@@ -31,16 +31,20 @@ export class LiabilitiesComponent implements OnInit, OnDestroy {
   getEMI(liability: Liability): number {
     const principal = +liability.principal;
     const rate = +liability.interestRate / 12 / 100;
-    const months = +liability.years * 12;
-    if (principal && rate && months) {
+    const months = this.getTenureMonths(liability);
+    if (principal && months && rate) {
       return principal * rate * Math.pow(1 + rate, months) / (Math.pow(1 + rate, months) - 1);
     }
-    return 0;
+    return principal && months ? principal / months : 0;
+  }
+
+  getTenureMonths(liability: Liability): number {
+    return +(liability.tenureMonths ?? (liability.years || 0) * 12);
   }
 
   getTotalInterest(liability: Liability): number {
     const emi = this.getEMI(liability);
-    const totalPayment = emi * (+liability.years) * 12;
+    const totalPayment = emi * this.getTenureMonths(liability);
     return totalPayment - (+liability.principal);
   }
 
@@ -68,7 +72,10 @@ export class LiabilitiesComponent implements OnInit, OnDestroy {
   }
 
   edit(liability: Liability) {
-    this.liabilityForm.patchValue(liability);
+    this.liabilityForm.patchValue({
+      ...liability,
+      tenureMonths: this.getTenureMonths(liability)
+    });
     this.editingId = liability.id;
   }
 

@@ -30,7 +30,8 @@ export class ScenarioOverviewComponent implements OnInit {
       if (activeScenario) {
         this.incomes = activeScenario.incomes || [];
         this.expenses = activeScenario.expenses || [];
-        this.investments = activeScenario.investments || [];
+        this.investments = (activeScenario.investments || [])
+          .filter(investment => investment.type !== 'SIP' && investment.type !== 'Lumpsum');
         this.liabilities = activeScenario.liabilities || [];
         this.swpPlan = activeScenario.swpPlan || null;
       }

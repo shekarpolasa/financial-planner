@@ -34,7 +34,7 @@
             <div class="summary-card"
                 [ngClass]="sustainabilityYears < 10 ? 'danger-card' : (sustainabilityYears < 20 ? 'warning-card' : 'info-card')">
                 <h6><i class="fas fa-clock me-2"></i>Sustainability Period</h6>
-                <h4>{{sustainabilityYears}} Years</h4>
+                <h4>{{ sustainabilityCapped ? 'At least ' : '' }}{{sustainabilityYears}} Years</h4>
                 <small>From {{swpForm.value.startDate | date:'MMM yyyy'}} onwards</small>
             </div>
             <div class="summary-card">
@@ -48,6 +48,9 @@
                 <h4>₹{{ totalMonthlyOutflow | number:'1.0-0' }}</h4>
                 <small>Expenses ({{swpForm.value.inflationRate}}% inflation) + EMI</small>
             </div>
+        </div>
+        <div class="alert alert-info mt-3" *ngIf="sustainabilityCapped">
+            The projection reached its 50-year limit with a remaining balance, so the corpus may last longer.
         </div>
     </div>
 </div>

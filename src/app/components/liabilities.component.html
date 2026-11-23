@@ -12,7 +12,7 @@
                             placeholder="e.g., Home Loan, Car Loan, Personal Loan" />
                     </div>
                     <div class="mb-3">
-                        <label for="liabilityPrincipal" class="form-label">Principal Amount (₹)</label>
+                        <label for="liabilityPrincipal" class="form-label">Outstanding Principal Amount (₹)</label>
                         <input id="liabilityPrincipal" class="form-control" formControlName="principal" type="number"
                             placeholder="" />
                     </div>
@@ -22,9 +22,9 @@
                             type="number" placeholder="" />
                     </div>
                     <div class="mb-3">
-                        <label for="liabilityYears" class="form-label">Loan Tenure (Years)</label>
-                        <input id="liabilityYears" class="form-control" formControlName="years" type="number"
-                            placeholder="" />
+                        <label for="liabilityTenureMonths" class="form-label">Remaining Loan Tenure (Months)</label>
+                        <input id="liabilityTenureMonths" class="form-control" formControlName="tenureMonths"
+                            type="number" min="1" placeholder="e.g. 57" />
                     </div>
                     <button class="btn btn-primary rounded-pill" type="submit">Save</button>
                     <button *ngIf="editingId" class="btn btn-secondary rounded-pill ms-2" type="button"
@@ -58,8 +58,8 @@
                         <div>
                             <strong>{{ liability.name }}</strong><br>
                             <span class="text-info">Principal: ₹{{ liability.principal | number:'1.0-0' }}</span><br>
-                            <span class="text-warning">{{ liability.interestRate }}% for {{ liability.years }}
-                                years</span><br>
+                            <span class="text-warning">{{ liability.interestRate }}% for {{ getTenureMonths(liability) }}
+                                months</span><br>
                             <span class="text-danger">EMI: ₹{{ getEMI(liability) | number:'1.0-0' }}</span><br>
                             <small class="text-muted">Total Interest: ₹{{ getTotalInterest(liability) | number:'1.0-0'
                                 }}</small>

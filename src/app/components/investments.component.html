@@ -2,34 +2,47 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header">
-                <h5><i class="fas fa-plus me-2"></i>{{ editingId ? 'Edit Investment' : 'Add Investment' }}</h5>
+                <h5><i class="fas fa-plus me-2"></i>{{ editingId ? 'Edit Asset' : 'Add Asset' }}</h5>
             </div>
             <div class="card-body">
                 <form [formGroup]="investmentForm" (ngSubmit)="submit()">
                     <div class="mb-3">
-                        <label for="investmentType" class="form-label">Investment Type</label>
+                        <label for="investmentName" class="form-label">Name / Description</label>
+                        <input id="investmentName" class="form-control" formControlName="name" type="text"
+                            placeholder="e.g. Retirement fund or family home" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="investmentType" class="form-label">Asset Type</label>
                         <select id="investmentType" class="form-select" formControlName="type">
-                            <option value="SIP">SIP (Systematic Investment Plan)</option>
-                            <option value="Lumpsum">Lumpsum</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Deposits">Deposits</option>
+                            <option value="Stocks">Stocks</option>
+                            <option value="Mutual funds">Mutual funds</option>
+                            <option value="Bonds">Bonds</option>
+                            <option value="Gold">Gold</option>
+                            <option value="House">House</option>
+                            <option value="Land">Land</option>
+                            <option value="PF">PF</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="mb-3" *ngIf="investmentForm.value.type === 'SIP'">
-                        <label for="monthlyAmount" class="form-label">Monthly Amount (₹)</label>
-                        <input id="monthlyAmount" class="form-control" formControlName="monthlyAmount" type="number"
-                            placeholder="" />
-                    </div>
-                    <div class="mb-3" *ngIf="investmentForm.value.type === 'Lumpsum'">
-                        <label for="lumpsumAmount" class="form-label">Lumpsum Amount (₹)</label>
-                        <input id="lumpsumAmount" class="form-control" formControlName="amount" type="number"
+                    <div class="mb-3">
+                        <label for="assetValue" class="form-label">Current Value (₹, optional)</label>
+                        <input id="assetValue" class="form-control" formControlName="amount" type="number"
                             placeholder="" />
                     </div>
                     <div class="mb-3">
-                        <label for="expectedReturn" class="form-label">Expected Annual Return (%)</label>
+                        <label for="monthlyContribution" class="form-label">Monthly Contribution (₹, optional)</label>
+                        <input id="monthlyContribution" class="form-control" formControlName="monthlyContribution"
+                            type="number" placeholder="For example, an SIP contribution" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="expectedReturn" class="form-label">Expected Annual Return / Growth (%)</label>
                         <input id="expectedReturn" class="form-control" formControlName="expectedReturn" type="number"
                             placeholder="" />
                     </div>
                     <div class="mb-3">
-                        <label for="investmentYears" class="form-label">Total Investment Period (Years)</label>
+                        <label for="investmentYears" class="form-label">Projection Period (Years)</label>
                         <input id="investmentYears" class="form-control" formControlName="years" type="number"
                             placeholder="" />
                     </div>
@@ -43,44 +56,53 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5><i class="fas fa-list me-2"></i>Your Investments</h5>
+                <h5><i class="fas fa-list me-2"></i>Your Assets</h5>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-6">
                         <div class="result-card">
-                            <div>Monthly Total</div>
+                            <div>Monthly Contributions</div>
                             <div class="h4">₹{{ monthlyTotal | number:'1.0-2' }}</div>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="result-card">
-                            <div>Yearly Total</div>
-                            <div class="h4">₹{{ yearlyTotal | number:'1.0-2' }}</div>
+                            <div>Total Current Value</div>
+                            <div class="h4">₹{{ currentValueTotal | number:'1.0-2' }}</div>
                         </div>
                     </div>
                 </div>
-                <div *ngIf="(investments$ | async) as investments">
-                    @if(investments.length === 0)
+                <div *ngIf="(investments$ | async) as assets">
+                    @if(assets.length === 0)
                     {
                     <div class="text-center text-muted mt-3">
-                        No investments added yet
+                        No assets added yet
                     </div>
                     }
                     @else
                     {
-                    <div *ngFor="let investment of investments"
+                    <div *ngFor="let investment of assets"
                         class="investment-item d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>{{ investment.type }}</strong><br>
-                            <span *ngIf="investment.type === 'SIP'">₹{{ investment.monthlyAmount | number:'1.0-2'
-                                }}/month</span>
-                            <span *ngIf="investment.type === 'Lumpsum'">₹{{ investment.amount | number:'1.0-2'
+                            <strong>
+                                {{ investment.type }}
+                                @if(investment.name)
+                                {
+                                ({{ investment.name }})
+                                }
+                            </strong><br>
+                            <span *ngIf="investment.amount">Current value: ₹{{ investment.amount | number:'1.0-2'
+                                }}</span>
+                            <span *ngIf="investment.monthlyContribution"><br>Monthly contribution: ₹{{
+                                investment.monthlyContribution | number:'1.0-2'
                                 }}</span><br>
                             <small class="text-muted">
-                                {{ investment.expectedReturn }}% for {{ investment.years }} years
+                                <span *ngIf="investment.expectedReturn || investment.expectedReturn === 0">{{
+                                    investment.expectedReturn }}% annual growth</span>
+                                <span *ngIf="investment.years"> for {{ investment.years }} years</span>
                             </small><br>
-                            <small class="text-success">
+                            <small class="text-success" *ngIf="investment.years">
                                 Future Value: ₹{{ getMaturityValue(investment) | number:'1.0-0' }}
                             </small>
                         </div>
